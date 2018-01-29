@@ -32,7 +32,7 @@ public:
 
                 int d = open("out",O_TRUNC|O_WRONLY);
 
-		Compress c;
+		Compress c(1200);
 
 		c.compr(data1, strlen(data1));
                 int n = write(d,c.cdata(),c.clen());
@@ -40,7 +40,7 @@ public:
 		c.compr(data2, strlen(data2));
                 n = write(d,c.cdata(),c.clen());
 
-		c.finish();
+		c.compr(NULL,0);
                 n = write(d,c.cdata(),c.clen());
 
                 close(d);
@@ -58,5 +58,23 @@ public:
 
                 TS_ASSERT_EQUALS(nread, strlen(data));
                 TS_ASSERT_EQUALS(strncmp(data,buf2,nread), 0);
+	}
+
+	void testCanCompressLargeData() {
+		int din = open("large.txt", O_RDONLY);
+		int dout = open("large_out.gz",O_TRUNC|O_WRONLY);
+		int n;
+		char buf[1024];
+		Compress c(1200);
+		while ( (n=read(din,buf,1024)) != 0) {
+			c.compr(buf, n);
+			n = write(dout,c.cdata(),c.clen());
+		}
+		c.compr(NULL, 0);
+		n = write(dout,c.cdata(),c.clen());
+		close(dout);
+		system("gunzip large_out.gz");
+		int ret = system("diff large.txt large_out");
+		TS_ASSERT_EQUALS(ret, 0);
 	}
 };

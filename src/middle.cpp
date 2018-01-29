@@ -7,22 +7,19 @@ int main(void) {
 
 	UDPSender us("localhost", 3000);
 	UDPReceiver ur(2000);
-	Compress c;
+	Compress c(1024);
 
 	int nrec = 0;
-	for (;;) {
+	do {
 		bptr = ur.receive();
 		nrec = ur.len();
-		if (nrec != 0) {
 			std::cerr << "received " << nrec << "bytes: " << bptr << std::endl;
 			c.compr((const char*)bptr, nrec);
-		} else {
-			std::cerr << "received 0 bytes, finishing" << std::endl;
-			c.finish();
+		if (c.clen() > 0) {
+			us.send((const char*)c.cdata(), c.clen());
+			std::cerr << "send " << c.clen() << "bytes" << std::endl;
 		}
-		us.send((const char*)c.cdata(), c.clen());
-		std::cerr << "send " << c.clen() << "bytes" << std::endl;
-	}
+	} while (nrec != 0);
 	us.send(inbuf,0);
 	return 0;
 }

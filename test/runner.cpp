@@ -39,5 +39,11 @@ public:
  void runTest() { suite_SockTest.testCanCompressData(); }
 } testDescription_suite_SockTest_testCanCompressData;
 
+static class TestDescription_suite_SockTest_testCanCompressLargeData : public CxxTest::RealTestDescription {
+public:
+ TestDescription_suite_SockTest_testCanCompressLargeData() : CxxTest::RealTestDescription( Tests_SockTest, suiteDescription_SockTest, 63, "testCanCompressLargeData" ) {}
+ void runTest() { suite_SockTest.testCanCompressLargeData(); }
+} testDescription_suite_SockTest_testCanCompressLargeData;
+
 #include <cxxtest/Root.cpp>
 const char* CxxTest::RealWorldDescription::_worldName = "cxxtest";

@@ -13,7 +13,7 @@ const int RBUFSIZ = 2048;
 const int MSGBUFSIZ = 1024;
 
 void error(const char *msg, int code) {
-	std::cerr << msg << std::endl;
+	std::cerr << "Error: " << msg << std::endl;
 	exit(code);
 }
 
