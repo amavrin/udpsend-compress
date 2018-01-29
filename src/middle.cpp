@@ -13,8 +13,8 @@ int main(void) {
 	do {
 		bptr = ur.receive();
 		nrec = ur.len();
-			std::cerr << "received " << nrec << "bytes: " << bptr << std::endl;
-			c.compr((const char*)bptr, nrec);
+		std::cerr << "received " << nrec << "bytes: " << bptr << std::endl;
+		c.compr((const char*)bptr, nrec);
 		if (c.clen() > 0) {
 			us.send((const char*)c.cdata(), c.clen());
 			std::cerr << "send " << c.clen() << "bytes" << std::endl;
