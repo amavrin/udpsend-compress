@@ -13,11 +13,11 @@ int main(void) {
 	do {
 		bptr = ur.receive();
 		nrec = ur.len();
-		std::cerr << "received " << nrec << "bytes: " << bptr << std::endl;
+		std::cerr << "middle received " << nrec << " bytes" << std::endl;
 		c.compr((const char*)bptr, nrec);
 		if (c.clen() > 0) {
 			us.send((const char*)c.cdata(), c.clen());
-			std::cerr << "send " << c.clen() << "bytes" << std::endl;
+			std::cerr << "middle send " << c.clen() << " bytes" << std::endl;
 		}
 	} while (nrec != 0);
 	us.send(inbuf,0);

@@ -6,7 +6,7 @@ int main(void) {
 	do {
 		char *bptr = ur.receive();
 		nrec = ur.len();
-		std::cerr << "received " << nrec << "bytes" << std::endl;
+		std::cerr << "server received " << nrec << "bytes" << std::endl;
 		write(STDOUT_FILENO,bptr,nrec);
 	} while (nrec != 0);
 		

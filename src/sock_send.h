@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/time.h>
 
 const int SBUFSIZ = 2048;
 const int RBUFSIZ = 2048;
@@ -23,16 +24,52 @@ class UDPSender {
 	char msgbuf[MSGBUFSIZ];
 	struct sockaddr_in serveraddr;
 	int serverlen;
+	int bpersec;
+	struct timeval lasttime;
+	struct timezone tz;
+	int snooze;
 
 	void sockInit();
 	void setServerAddr(const char *, int);
+	
 public:
 	UDPSender(const char *hostname, int port) {
 		sockInit();
 		setServerAddr(hostname, port);
+		bpersec = 0; // no limit
+		bzero(&lasttime, sizeof(lasttime));
+		snooze = 100;
+	}
+
+	void setspeedlim(int bps) {
+		bpersec = bps;
+	}
+
+	void throttle(int bytes) {
+		if (lasttime.tv_sec == 0 && lasttime.tv_usec == 0) {
+			gettimeofday(&lasttime, &tz);
+			return; // first call
+		}
+		if (bpersec == 0) return;
+
+		struct timeval now, then, wait;
+
+		long usec = bytes*1000000 / bpersec; // wait so much microseconds
+		wait.tv_sec = usec/1000000;
+		wait.tv_usec = usec - wait.tv_sec*1000000;
+
+		timeradd(&lasttime, &wait, &then);
+		gettimeofday(&now, &tz);
+
+		while ( timercmp(&now, &then, <) ) {
+			usleep(snooze);
+			gettimeofday(&now, &tz);
+		}
+		gettimeofday(&lasttime, &tz);
 	}
 
 	int send(char const *buf, int len) {
+		throttle(len);
 		serverlen = sizeof(serveraddr);
 		int n = sendto(sockfd, buf, len, 0, (sockaddr*) &serveraddr, serverlen);
 		if (n < 0) 
