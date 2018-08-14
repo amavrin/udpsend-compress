@@ -1,5 +1,10 @@
 Sample for https://www.freelancer.com/projects/software-architecture/socket-programming-16124407/
 
+There are 3 processes.
+1) 'client' sends data at specified speed via UDP
+2) 'middle' compresses data and send them to server
+3) 'server' recives the data and write it to stdout.
+
 compress_op.h: compress operations
 sock_send.h: UDP operations
 
